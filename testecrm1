@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CRM Turismo – Reservas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #0f172a;
+        --bg-elevated: #111827;
+        --bg-soft: #020617;
+        --border-subtle: #1e293b;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.15);
+        --text: #e5e7eb;
+        --text-soft: #9ca3af;
+        --danger: #ef4444;
+        --radius-lg: 18px;
+        --shadow-soft: 0 18px 35px rgba(15, 23, 42, 0.55);
+        --sidebar-width: 260px;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: radial-gradient(
+          circle at top,
+          #1d283a 0,
+          #020617 65%,
+          #000 100%
+        );
+        color: var(--text);
+      }
+
+      body {
+        display: flex;
+      }
+
+      .app-shell {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: linear-gradient(
+          180deg,
+          #020617 0%,
+          #020617 60%,
+          #000 100%
+        );
+        border-right: 1px solid rgba(148, 163, 184, 0.1);
+        padding: 20px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        margin-bottom: 12px;
+      }
+
+      .logo-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: radial-gradient(
+          circle at 20% 0,
+          #22d3ee,
+          #0ea5e9 40%,
+          #1e293b
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 16px;
+        color: #e5e7eb;
+      }
+
+      .logo-text {
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        font-size: 14px;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        background: transparent;
+        color: var(--text-soft);
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 10px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text);
+        transform: translateY(-1px);
+      }
+
+      .nav-btn.active {
+        background: var(--accent-soft);
+        color: #e0f2fe;
+      }
+
+      /* MAIN */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 18px 20px;
+        gap: 16px;
+      }
+
+      .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .main-header h1 {
+        font-size: 22px;
+        margin: 0;
+      }
+
+      .view-subtitle {
+        margin: 2px 0 0;
+        font-size: 13px;
+        color: var(--text-soft);
+      }
+
+      .view {
+        display: none;
+      }
+
+      .view.view-active {
+        display: block;
+      }
+
+      /* CARDS */
+      .card {
+        background: rgba(15, 23, 42, 0.9);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-soft);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        overflow: hidden;
+      }
+
+      .card-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .card-body {
+        padding: 10px 16px 14px;
+      }
+
+      .card-tools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* TABLE */
+      .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .table-wrapper.small {
+        max-height: 260px;
+        overflow-y: auto;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+
+      .table th,
+      .table td {
+        padding: 6px 8px;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+      }
+
+      .table th {
+        text-align: left;
+        font-weight: 500;
+        color: var(--text-soft);
+        font-size: 12px;
+      }
+
+      .table tbody tr:hover {
+        background: rgba(15, 23, 42, 0.8);
+      }
+
+      /* INPUTS & BUTTONS */
+      .input {
+        width: 100%;
+        padding: 7px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.85);
+        color: var(--text);
+        font-size: 13px;
+      }
+
+      .input::placeholder {
+        color: rgba(148, 163, 184, 0.9);
+      }
+
+      .input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+      }
+
+      .btn {
+        border-radius: 999px;
+        border: none;
+        padding: 7px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(90deg, #0ea5e9, #22c55e);
+        color: #0b1120;
+        font-weight: 600;
+      }
+
+      .btn-secondary {
+        background: rgba(51, 65, 85, 0.9);
+        color: var(--text);
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: #e0f2fe;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+      }
+
+      .btn-text {
+        background: transparent;
+        color: var(--text-soft);
+      }
+
+      .btn-xs {
+        padding: 3px 10px;
+        font-size: 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background: transparent;
+      }
+
+      .icon-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: transparent;
+        color: var(--text-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      /* FORM LAYOUT */
+      .form-section {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: radial-gradient(
+          circle at top,
+          rgba(15, 23, 42, 0.95),
+          #020617
+        );
+        border: 1px solid rgba(148, 163, 184, 0.3);
+      }
+
+      .form-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .form-section-header h3 {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .field {
+        margin-bottom: 8px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 11px;
+        margin-bottom: 3px;
+        color: var(--text-soft);
+      }
+
+      .field-inline {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .grid {
+        display: grid;
+        gap: 8px;
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      @media (max-width: 768px) {
+        .app-shell {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .sidebar-nav {
+          flex-direction: row;
+          flex-wrap: nowrap;
+          overflow-x: auto;
+        }
+
+        .main {
+          padding: 12px;
+        }
+
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* PAX CARDS */
+      .pax-card {
+        border-radius: 14px;
+        padding: 10px 10px 5px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px dashed rgba(148, 163, 184, 0.5);
+        margin-bottom: 10px;
+      }
+
+      .pax-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+      }
+
+      .badge {
+        border-radius: 999px;
+        font-size: 10px;
+        padding: 2px 8px;
+      }
+
+      .badge-primary {
+        background: rgba(56, 189, 248, 0.15);
+        color: #e0f2fe;
+      }
+
+      /* MODAL */
+      .modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        z-index: 50;
+      }
+
+      .modal.open {
+        display: block;
+      }
+
+      .modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.75);
+      }
+
+      .modal-panel {
+        position: absolute;
+        inset: 10px;
+        margin: auto;
+        max-width: 1100px;
+        max-height: 92vh;
+        border-radius: 22px;
+        background: rgba(15, 23, 42, 0.98);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        box-shadow: var(--shadow-soft);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-panel-full {
+        inset: 8px;
+        max-width: 1100px;
+        max-height: 96vh;
+      }
+
+      .modal-header {
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .modal-body {
+        padding: 10px 14px 8px;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      .modal-footer {
+        padding: 8px 14px 10px;
+        border-top: 1px solid rgba(148, 163, 184, 0.4);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      /* SERVIÇOS GRID */
+      .servicos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+        margin-top: 8px;
+      }
+
+      .servico-card {
+        padding: 10px;
+        border-radius: 16px;
+        background: radial-gradient(circle at top, #1f2937, #020617);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 12px;
+      }
+
+      .servico-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .servico-card-titulo {
+        font-weight: 500;
+      }
+
+      .servico-card-preco {
+        font-weight: 600;
+      }
+
+      .servico-card-meta {
+        color: var(--text-soft);
+        font-size: 11px;
+      }
+
+      .servico-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 4px;
+      }
+
+      .servico-card input[type="number"] {
+        width: 60px;
+      }
+
+      .servico-card.selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7);
+      }
+
+      .resumo-total {
+        margin-top: 8px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        font-size: 14px;
+      }
+
+      .col-interna {
+        display: table-cell;
+      }
+
+      .valores-internos-hidden .col-interna {
+        display: none;
+      }
+
+      .toggle-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      .placeholder {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: var(--radius-lg);
+        padding: 18px;
+        border: 1px dashed rgba(148, 163, 184, 0.5);
+        color: var(--text-soft);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <span class="logo-mark">PA</span>
+          <span class="logo-text">Perla Andina CRM</span>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" data-view="reservas">
+            <span>Central de Reservas</span>
+          </button>
+          <button class="nav-btn" data-view="contas">
+            <span>Contas</span>
+          </button>
+          <button class="nav-btn" data-view="calendario">
+            <span>Calendário</span>
+          </button>
+          <button class="nav-btn" data-view="email">
+            <span>E-mail prestador</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <header class="main-header">
+          <div>
+            <h1 id="view-title">Central de Reservas</h1>
+            <p class="view-subtitle">
+              Ver e editar reservas, criar nova venda e anexar serviços.
+            </p>
+          </div>
+          <button id="btnNovaReserva" class="btn btn-primary">
+            + Nova reserva
+          </button>
+        </header>
+
+        <!-- VIEW RESERVAS -->
+        <section id="view-reservas" class="view view-active">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Reservas</div>
+              <div class="card-tools">
+                <input
+                  type="search"
+                  id="buscaReservas"
+                  class="input"
+                  placeholder="Buscar por nome do pax, hotel, telefone..."
+                />
+              </div>
+            </div>
+
+            <div class="card-body">
+              <div class="table-wrapper">
+                <table class="table" id="tabelaReservas">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Data venda</th>
+                      <th>Titular</th>
+                      <th>Hotel</th>
+                      <th>Telefone</th>
+                      <th>PAX</th>
+                      <th>Total reserva</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PLACEHOLDERS FUTUROS -->
+        <section id="view-contas" class="view">
+          <div class="placeholder">
+            Tela de Contas será ligada à aba "cuentas" da planilha.
+          </div>
+        </section>
+
+        <section id="view-calendario" class="view">
+          <div class="placeholder">
+            Tela de Calendário será ligada à aba "CALENDARIO".
+          </div>
+        </section>
+
+        <section id="view-email" class="view">
+          <div class="placeholder">
+            Tela de E-mail ao prestador será ligada à aba
+            "Libro_prestadores_mail".
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- MODAL FULLSCREEN – RESERVA -->
+    <div id="modalReserva" class="modal">
+      <div class="modal-backdrop" data-close-modal="modalReserva"></div>
+      <div class="modal-panel modal-panel-full">
+        <header class="modal-header">
+          <h2 id="tituloModalReserva">Nova reserva</h2>
+          <button
+            type="button"
+            class="icon-btn"
+            data-close-modal="modalReserva"
+          >
+            ✕
+          </button>
+        </header>
+
+        <section class="modal-body">
+          <form id="formReserva">
+            <!-- BLOCO 1 – Dados principais -->
+            <div class="form-section">
+              <div class="form-section-header">
+                <h3>Dados da reserva</h3>
+              </div>
+
+              <div class="grid grid-2">
+                <div class="field">
+                  <label for="dataVenda">Data da venda</label>
+                  <div class="field-inline">
+                    <input
+                      type="date"
+                      id="dataVenda"
+                      name="dataVenda"
+                      class="input"
+                    />
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="telefone">Telefone</label>
+                  <input
+                    type="tel"
+                    id="telefone"
+                    name="telefone"
+                    class="input"
+                    placeholder="+54 9 ..."
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="hotel">Hotel</label>
+                  <input
+                    type="text"
+                    id="hotel"
+                    name="hotel"
+                    class="input"
+                    placeholder="Hotel do titular"
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="nacionalidadeTitular">Nacionalidade</label>
+                  <input
+                    type="text"
+                    id="nacionalidadeTitular"
+                    name="nacionalidadeTitular"
+                    class="input"
+                    placeholder="Brasileiro, Argentino..."
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- BLOCO 2 – Titular e acompanhantes -->
+            <div class="form-section">
+              <div class="form-section-header">
+                <h3>PAX – Titular e acompanhantes</h3>
+              </div>
+
+              <!-- TITULAR -->
+              <div class="pax-card pax-card-titular">
+                <div class="pax-card-header">
+                  <span class="badge badge-primary">Titular</span>
+                </div>
+
+                <div class="grid grid-2">
+                  <div class="field">
+                    <label for="nomeTitular">Nome completo</label>
+                    <input
+                      type="text"
+                      id="nomeTitular"
+                      name="nomeTitular"
+                      class="input"
+                      placeholder="Nome do titular"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label for="tipoDocumentoTitular">Documento (tipo)</label>
+                    <select
+                      id="tipoDocumentoTitular"
+                      name="tipoDocumentoTitular"
+                      class="input"
+                    >
+                      <option value="DNI">DNI</option>
+                      <option value="RG">RG</option>
+                      <option value="PASSAPORTE">Passaporte</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="numeroDocumentoTitular">Documento (nº)</label>
+                    <input
+                      type="text"
+                      id="numeroDocumentoTitular"
+                      name="numeroDocumentoTitular"
+                      class="input"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label for="nascimentoTitular">Data de nascimento</label>
+                    <input
+                      type="date"
+                      id="nascimentoTitular"
+                      name="nascimentoTitular"
+                      class="input"
+                    />
+                  </div>
+
+                  <div class="field">
+                    <label for="idadeTitular">Idade</label>
+                    <input
+                      type="number"
+                      id="idadeTitular"
+                      name="idadeTitular"
+                      class="input"
+                      readonly
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- LISTA ACOMPANHANTES -->
+              <div id="listaAcompanhantes"></div>
+
+              <div class="field">
+                <button
+                  type="button"
+                  id="btnAdicionarAcompanhante"
+                  class="btn btn-outline"
+                >
+                  + Adicionar acompanhante
+                </button>
+              </div>
+            </div>
+
+            <!-- BLOCO 3 – Serviços -->
+            <div class="form-section">
+              <div class="form-section-header">
+                <h3>Serviços</h3>
+                <button
+                  type="button"
+                  id="btnEscolherServicos"
+                  class="btn btn-secondary"
+                >
+                  Escolher serviços (catálogo)
+                </button>
+              </div>
+
+              <div class="field">
+                <div class="toggle-row">
+                  <span>Comissão e valor prestador</span>
+                  <button
+                    type="button"
+                    id="btnToggleValoresInternos"
+                    class="btn btn-xs"
+                  >
+                    Ocultar/mostrar
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-wrapper small">
+                <table class="table" id="tabelaServicosSelecionados">
+                  <thead>
+                    <tr>
+                      <th>Serviço</th>
+                      <th>PAX</th>
+                      <th>Valor/pax</th>
+                      <th class="col-interna">Comissão</th>
+                      <th class="col-interna">Prestador</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div class="resumo-total">
+                <span>Total reserva:</span>
+                <strong id="totalReservaDisplay">AR$ 0,00</strong>
+              </div>
+            </div>
+          </form>
+        </section>
+
+        <footer class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-text"
+            data-close-modal="modalReserva"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            id="btnSalvarReserva"
+            class="btn btn-primary"
+          >
+            Salvar reserva
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- MODAL FULLSCREEN – SERVIÇOS (CATÁLOGO) -->
+    <div id="modalServicos" class="modal">
+      <div class="modal-backdrop" data-close-modal="modalServicos"></div>
+      <div class="modal-panel modal-panel-full">
+        <header class="modal-header">
+          <h2>Catálogo de serviços</h2>
+          <button
+            type="button"
+            class="icon-btn"
+            data-close-modal="modalServicos"
+          >
+            ✕
+          </button>
+        </header>
+
+        <section class="modal-body">
+          <div class="field">
+            <input
+              type="search"
+              id="buscaServicos"
+              class="input"
+              placeholder="Buscar por atividade, categoria, prestador..."
+            />
+          </div>
+
+          <div id="servicosGrid" class="servicos-grid"></div>
+        </section>
+
+        <footer class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-text"
+            data-close-modal="modalServicos"
+          >
+            Fechar
+          </button>
+          <button
+            type="button"
+            id="btnAplicarServicos"
+            class="btn btn-primary"
+          >
+            Aplicar seleção
+          </button>
+        </footer>
+      </div>
+    </div>
+
+    <!-- JS – API + LÓGICA RESERVAS -->
+    <script>
+      // ================= API (Apps Script) =================
+
+      const API_URL =
+  "https://script.google.com/macros/s/AKfycbypupbDeWCmBAt3KkOOKahFuAldFlkEJ3yNirG8F70QsXnTMsvTLH6RK6Ivb7YrU25t/exec";
+
+      function apiListarReservas() {
+        return fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "listarReservas", payload: {} }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (!data || !data.success) {
+              console.error("Erro listarReservas:", data && data.error);
+              return [];
+            }
+            return data.reservas || [];
+          })
+          .catch((err) => {
+            console.error("Erro listarReservas (fetch):", err);
+            return [];
+          });
+      }
+
+      function apiSalvarReserva(reserva) {
+        return fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "salvarReserva",
+            payload: { reserva: reserva },
+          }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (!data || !data.success) {
+              const msg = (data && data.error) || "Erro ao salvar reserva";
+              console.error("Erro salvarReserva:", msg);
+              throw new Error(msg);
+            }
+            return data.reserva;
+          });
+      }
+
+      function apiObterReserva(id) {
+        return apiListarReservas().then((lista) => {
+          const numId = Number(id);
+          return lista.find((r) => Number(r.id) === numId) || null;
+        });
+      }
+
+      function apiListarCatalogo() {
+        return fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "listarCatalogo", payload: {} }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (!data || !data.success) {
+              console.error("Erro listarCatalogo:", data && data.error);
+              return [];
+            }
+            return data.catalogo || [];
+          })
+          .catch((err) => {
+            console.error("Erro listarCatalogo (fetch):", err);
+            return [];
+          });
+      }
+
+      window.CRMApi = {
+        listarReservas: apiListarReservas,
+        salvarReserva: apiSalvarReserva,
+        obterReserva: apiObterReserva,
+        listarCatalogo: apiListarCatalogo,
+      };
+
+      // ================= FRONT – Reservas =================
+
+      (function () {
+        const views = {
+          reservas: document.getElementById("view-reservas"),
+          contas: document.getElementById("view-contas"),
+          calendario: document.getElementById("view-calendario"),
+          email: document.getElementById("view-email"),
+        };
+
+        const viewTitle = document.getElementById("view-title");
+        const navButtons = document.querySelectorAll(".nav-btn");
+        const tabelaReservasBody =
+          document.querySelector("#tabelaReservas tbody");
+        const buscaReservasInput = document.getElementById("buscaReservas");
+
+        const modalReserva = document.getElementById("modalReserva");
+        const tituloModalReserva =
+          document.getElementById("tituloModalReserva");
+        const btnNovaReserva = document.getElementById("btnNovaReserva");
+        const btnSalvarReserva = document.getElementById("btnSalvarReserva");
+        const formReserva = document.getElementById("formReserva");
+        const listaAcompanhantes =
+          document.getElementById("listaAcompanhantes");
+        const btnAdicionarAcompanhante = document.getElementById(
+          "btnAdicionarAcompanhante"
+        );
+        const totalReservaDisplay =
+          document.getElementById("totalReservaDisplay");
+
+        const inputNascimentoTitular =
+          document.getElementById("nascimentoTitular");
+        const inputIdadeTitular = document.getElementById("idadeTitular");
+
+        const tabelaServicosSelecionados = document.querySelector(
+          "#tabelaServicosSelecionados tbody"
+        );
+        const btnToggleValoresInternos = document.getElementById(
+          "btnToggleValoresInternos"
+        );
+
+        const modalServicos = document.getElementById("modalServicos");
+        const servicosGrid = document.getElementById("servicosGrid");
+        const buscaServicosInput = document.getElementById("buscaServicos");
+        const btnEscolherServicos =
+          document.getElementById("btnEscolherServicos");
+        const btnAplicarServicos =
+          document.getElementById("btnAplicarServicos");
+
+        let reservaEmEdicao = null;
+        let servicosTempSelecionados = [];
+        let servicosDaReserva = [];
+        let valoresInternosVisiveis = false;
+
+        // Navegação
+        navButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const target = btn.getAttribute("data-view");
+            navButtons.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            trocarView(target);
+          });
+        });
+
+        function trocarView(view) {
+          Object.keys(views).forEach((key) => {
+            views[key].classList.toggle("view-active", key === view);
+          });
+
+          if (view === "reservas") viewTitle.textContent = "Central de Reservas";
+          else if (view === "contas") viewTitle.textContent = "Contas";
+          else if (view === "calendario")
+            viewTitle.textContent = "Calendário";
+          else if (view === "email")
+            viewTitle.textContent = "E-mail prestador";
+        }
+
+        // Utils
+        function formatarMoeda(v) {
+          if (!v || isNaN(v)) return "AR$ 0,00";
+          return (
+            "AR$ " +
+            Number(v).toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          );
+        }
+
+        function calcularIdade(dateStr) {
+          if (!dateStr) return "";
+          const hoje = new Date();
+          const nascimento = new Date(dateStr + "T00:00:00");
+          let idade = hoje.getFullYear() - nascimento.getFullYear();
+          const m = hoje.getMonth() - nascimento.getMonth();
+          if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+          }
+          return idade;
+        }
+
+        function abrirModal(id) {
+          const el = document.getElementById(id);
+          if (el) el.classList.add("open");
+        }
+
+        function fecharModal(id) {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove("open");
+        }
+
+        document
+          .querySelectorAll("[data-close-modal]")
+          .forEach((el) => {
+            el.addEventListener("click", () => {
+              const id = el.getAttribute("data-close-modal");
+              fecharModal(id);
+            });
+          });
+
+        function obterTotalPaxAtual() {
+          const qtdAcomp =
+            listaAcompanhantes.querySelectorAll(".pax-card-acompanhante")
+              .length;
+          return 1 + qtdAcomp;
+        }
+
+        // Lista reservas
+        function carregarReservas() {
+          CRMApi.listarReservas().then((reservas) => {
+            renderizarTabelaReservas(reservas);
+          });
+        }
+
+        function renderizarTabelaReservas(reservas) {
+          const termo = (buscaReservasInput.value || "").toLowerCase().trim();
+          tabelaReservasBody.innerHTML = "";
+
+          reservas
+            .filter((r) => {
+              if (!termo) return true;
+              const alvo =
+                (r.titular && r.titular.nome ? r.titular.nome : "") +
+                " " +
+                (r.hotel || "") +
+                " " +
+                (r.telefone || "");
+              return alvo.toLowerCase().includes(termo);
+            })
+            .forEach((r) => {
+              const tr = document.createElement("tr");
+
+              const total =
+                Array.isArray(r.servicos) && r.servicos.length
+                  ? r.servicos.reduce((acc, s) => {
+                      const pax = Number(s.qtdPax || r.totalPax || 1);
+                      const valor = Number(s.precoPax || 0) * pax;
+                      return acc + valor;
+                    }, 0)
+                  : 0;
+
+              tr.innerHTML = `
+                <td>${r.id || ""}</td>
+                <td>${r.dataVenda || ""}</td>
+                <td>${r.titular ? r.titular.nome || "" : ""}</td>
+                <td>${r.hotel || ""}</td>
+                <td>${r.telefone || ""}</td>
+                <td>${r.totalPax || ""}</td>
+                <td>${formatarMoeda(total)}</td>
+                <td>
+                  <button class="btn btn-xs btn-outline" data-editar-reserva="${
+                    r.id
+                  }">Editar</button>
+                </td>
+              `;
+              tabelaReservasBody.appendChild(tr);
+            });
+
+          tabelaReservasBody
+            .querySelectorAll("[data-editar-reserva]")
+            .forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const id = Number(btn.getAttribute("data-editar-reserva"));
+                editarReserva(id);
+              });
+            });
+        }
+
+        buscaReservasInput.addEventListener("input", carregarReservas);
+
+        // Nova / editar
+        btnNovaReserva.addEventListener("click", novaReserva);
+
+        function novaReserva() {
+          reservaEmEdicao = null;
+          tituloModalReserva.textContent = "Nova reserva";
+          formReserva.reset();
+          listaAcompanhantes.innerHTML = "";
+          tabelaServicosSelecionados.innerHTML = "";
+          totalReservaDisplay.textContent = formatarMoeda(0);
+          servicosDaReserva = [];
+          servicosTempSelecionados = [];
+
+          const hoje = new Date();
+          const yyyy = hoje.getFullYear();
+          const mm = String(hoje.getMonth() + 1).padStart(2, "0");
+          const dd = String(hoje.getDate()).padStart(2, "0");
+          document.getElementById("dataVenda").value = `${yyyy}-${mm}-${dd}`;
+
+          abrirModal("modalReserva");
+        }
+
+        function editarReserva(id) {
+          CRMApi.obterReserva(id).then((reserva) => {
+            if (!reserva) {
+              alert("Reserva não encontrada");
+              return;
+            }
+            reservaEmEdicao = reserva;
+            preencherFormularioComReserva(reserva);
+            abrirModal("modalReserva");
+          });
+        }
+
+        function preencherFormularioComReserva(r) {
+          tituloModalReserva.textContent = `Editar reserva #${r.id}`;
+          formReserva.reset();
+          listaAcompanhantes.innerHTML = "";
+          tabelaServicosSelecionados.innerHTML = "";
+          servicosDaReserva = Array.isArray(r.servicos) ? r.servicos.slice() : [];
+          servicosTempSelecionados = [];
+
+          document.getElementById("dataVenda").value = r.dataVenda || "";
+          document.getElementById("telefone").value = r.telefone || "";
+          document.getElementById("hotel").value = r.hotel || "";
+          document.getElementById("nacionalidadeTitular").value =
+            (r.titular && r.titular.nacionalidade) || "";
+
+          document.getElementById("nomeTitular").value =
+            (r.titular && r.titular.nome) || "";
+          document.getElementById("tipoDocumentoTitular").value =
+            (r.titular && r.titular.tipoDocumento) || "DNI";
+          document.getElementById("numeroDocumentoTitular").value =
+            (r.titular && r.titular.numeroDocumento) || "";
+          document.getElementById("nascimentoTitular").value =
+            (r.titular && r.titular.nascimento) || "";
+          document.getElementById("idadeTitular").value =
+            (r.titular && r.titular.idade) || "";
+
+          if (Array.isArray(r.acompanhantes)) {
+            r.acompanhantes.forEach((ac) => adicionarAcompanhante(ac));
+          }
+
+          renderizarTabelaServicos();
+          atualizarTotalReserva();
+        }
+
+        // Titular: idade automática
+        inputNascimentoTitular.addEventListener("change", () => {
+          inputIdadeTitular.value =
+            calcularIdade(inputNascimentoTitular.value) || "";
+        });
+
+        // Acompanhantes
+        btnAdicionarAcompanhante.addEventListener("click", () =>
+          adicionarAcompanhante()
+        );
+
+        function adicionarAcompanhante(acomp) {
+          const card = document.createElement("div");
+          card.className = "pax-card pax-card-acompanhante";
+
+          const nome = (acomp && acomp.nome) || "";
+          const tipoDocumento = (acomp && acomp.tipoDocumento) || "DNI";
+          const numeroDocumento = (acomp && acomp.numeroDocumento) || "";
+          const nascimento = (acomp && acomp.nascimento) || "";
+          const idade = (acomp && acomp.idade) || "";
+          const nacionalidade = (acomp && acomp.nacionalidade) || "";
+
+          card.innerHTML = `
+            <div class="pax-card-header">
+              <span class="badge">Acompanhante</span>
+              <button type="button" class="btn btn-xs" data-remover-acomp>Remover</button>
+            </div>
+            <div class="grid grid-2">
+              <div class="field">
+                <label>Nome completo</label>
+                <input type="text" class="input" data-field="nome" value="${nome}" />
+              </div>
+              <div class="field">
+                <label>Documento (tipo)</label>
+                <select class="input" data-field="tipoDocumento">
+                  <option value="DNI" ${tipoDocumento === "DNI" ? "selected" : ""}>DNI</option>
+                  <option value="RG" ${tipoDocumento === "RG" ? "selected" : ""}>RG</option>
+                  <option value="PASSAPORTE" ${
+                    tipoDocumento === "PASSAPORTE" ? "selected" : ""
+                  }>Passaporte</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Documento (nº)</label>
+                <input type="text" class="input" data-field="numeroDocumento" value="${numeroDocumento}" />
+              </div>
+              <div class="field">
+                <label>Data de nascimento</label>
+                <input type="date" class="input" data-field="nascimento" value="${nascimento}" />
+              </div>
+              <div class="field">
+                <label>Idade</label>
+                <input type="number" class="input" data-field="idade" value="${idade}" readonly />
+              </div>
+              <div class="field">
+                <label>Nacionalidade</label>
+                <input type="text" class="input" data-field="nacionalidade" value="${nacionalidade}" />
+              </div>
+            </div>
+          `;
+
+          const btnRemover = card.querySelector("[data-remover-acomp]");
+          btnRemover.addEventListener("click", () => {
+            card.remove();
+            atualizarTotalReserva();
+          });
+
+          const nascimentoInput = card.querySelector(
+            '[data-field="nascimento"]'
+          );
+          const idadeInput = card.querySelector('[data-field="idade"]');
+
+          nascimentoInput.addEventListener("change", () => {
+            idadeInput.value = calcularIdade(nascimentoInput.value) || "";
+          });
+
+          listaAcompanhantes.appendChild(card);
+        }
+
+        function coletarDadosReservaDoForm() {
+          const dataVenda = document.getElementById("dataVenda").value || "";
+          const telefone = document.getElementById("telefone").value || "";
+          const hotel = document.getElementById("hotel").value || "";
+          const nacionalidadeTitular =
+            document.getElementById("nacionalidadeTitular").value || "";
+
+          const titular = {
+            nome: document.getElementById("nomeTitular").value || "",
+            tipoDocumento:
+              document.getElementById("tipoDocumentoTitular").value || "",
+            numeroDocumento:
+              document.getElementById("numeroDocumentoTitular").value || "",
+            nascimento:
+              document.getElementById("nascimentoTitular").value || "",
+            idade: document.getElementById("idadeTitular").value || "",
+            nacionalidade: nacionalidadeTitular,
+          };
+
+          const acompanhantes = [];
+          listaAcompanhantes
+            .querySelectorAll(".pax-card-acompanhante")
+            .forEach((card) => {
+              const getField = (name) =>
+                card.querySelector(`[data-field="${name}"]`).value || "";
+              acompanhantes.push({
+                nome: getField("nome"),
+                tipoDocumento: getField("tipoDocumento"),
+                numeroDocumento: getField("numeroDocumento"),
+                nascimento: getField("nascimento"),
+                idade: getField("idade"),
+                nacionalidade: getField("nacionalidade"),
+              });
+            });
+
+          const totalPax = 1 + acompanhantes.length;
+
+          return {
+            dataVenda,
+            telefone,
+            hotel,
+            titular,
+            acompanhantes,
+            totalPax,
+          };
+        }
+
+        // Serviços – catálogo
+        btnEscolherServicos.addEventListener("click", () => {
+          const totalPaxAtual = obterTotalPaxAtual();
+          servicosTempSelecionados = servicosDaReserva.map((s) =>
+            Object.assign({}, s)
+          );
+          carregarCatalogo(totalPaxAtual);
+        });
+
+        function carregarCatalogo(totalPaxPadrao) {
+          CRMApi.listarCatalogo().then((catalogo) => {
+            renderizarCatalogo(catalogo, totalPaxPadrao);
+            abrirModal("modalServicos");
+          });
+        }
+
+        function renderizarCatalogo(catalogo, totalPaxPadrao) {
+          servicosGrid.innerHTML = "";
+          const termo = (buscaServicosInput.value || "").toLowerCase().trim();
+
+          catalogo
+            .filter((item) => {
+              if (!termo) return true;
+              const alvo =
+                (item.atividade || "") +
+                " " +
+                (item.categoria || "") +
+                " " +
+                (item.prestador || "");
+              return alvo.toLowerCase().includes(termo);
+            })
+            .forEach((item) => {
+              const card = document.createElement("div");
+              card.className = "servico-card";
+              card.dataset.idCatalogo = item.id;
+
+              const existente = servicosTempSelecionados.find(
+                (s) => s.idCatalogo === item.id
+              );
+              const qtdPax = existente
+                ? existente.qtdPax || totalPaxPadrao
+                : totalPaxPadrao;
+
+              if (existente) {
+                card.classList.add("selected");
+              }
+
+              card.innerHTML = `
+                <div class="servico-card-header">
+                  <div class="servico-card-titulo">
+                    ${item.atividade || ""}
+                  </div>
+                  <div class="servico-card-preco">
+                    ${formatarMoeda(item.precoPax || 0)}
+                  </div>
+                </div>
+                <div class="servico-card-meta">
+                  ${item.categoria || ""} · ${item.prestador || ""}
+                </div>
+                <div class="servico-card-meta">
+                  Comissão: ${formatarMoeda(item.comissao || 0)} · Prestador: ${formatarMoeda(item.precoPrestador || 0)}
+                </div>
+                <div class="servico-card-footer">
+                  <span>PAX</span>
+                  <input type="number" min="0" class="input" value="${qtdPax}" />
+                </div>
+              `;
+
+              const inputQtd = card.querySelector("input[type='number']");
+
+              function syncSelecionado() {
+                let selecionado = servicosTempSelecionados.find(
+                  (s) => s.idCatalogo === item.id
+                );
+                let qtd = Number(inputQtd.value);
+                if (isNaN(qtd) || qtd < 0) qtd = 0;
+                inputQtd.value = qtd;
+
+                if (!selecionado && card.classList.contains("selected")) {
+                  selecionado = {
+                    idCatalogo: item.id,
+                    atividade: item.atividade,
+                    categoria: item.categoria,
+                    precoPax: Number(item.precoPax || item.precoPax || 0),
+                    comissao: Number(item.comissao || 0),
+                    precoPrestador: Number(item.precoPrestador || 0),
+                    prestador: item.prestador || "",
+                    qtdPax: qtd,
+                  };
+                  servicosTempSelecionados.push(selecionado);
+                } else if (selecionado) {
+                  selecionado.qtdPax = qtd;
+                }
+              }
+
+              card.addEventListener("click", (ev) => {
+                if (ev.target === inputQtd) return;
+                const id = item.id;
+                const idx = servicosTempSelecionados.findIndex(
+                  (s) => s.idCatalogo === id
+                );
+                if (idx >= 0) {
+                  servicosTempSelecionados.splice(idx, 1);
+                  card.classList.remove("selected");
+                } else {
+                  card.classList.add("selected");
+                  syncSelecionado();
+                }
+              });
+
+              inputQtd.addEventListener("change", () => {
+                if (!card.classList.contains("selected")) {
+                  card.classList.add("selected");
+                }
+                syncSelecionado();
+              });
+
+              servicosGrid.appendChild(card);
+            });
+        }
+
+        buscaServicosInput.addEventListener("input", () => {
+          // Recarrega catálogo mantendo seleção
+          const totalPaxAtual = obterTotalPaxAtual();
+          CRMApi.listarCatalogo().then((catalogo) => {
+            renderizarCatalogo(catalogo, totalPaxAtual);
+          });
+        });
+
+        btnAplicarServicos.addEventListener("click", () => {
+          servicosDaReserva = servicosTempSelecionados.map((s) =>
+            Object.assign({}, s)
+          );
+          renderizarTabelaServicos();
+          atualizarTotalReserva();
+          fecharModal("modalServicos");
+        });
+
+        function renderizarTabelaServicos() {
+          tabelaServicosSelecionados.innerHTML = "";
+          servicosDaReserva.forEach((s, idx) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${(s.atividade || "")} - ${(s.categoria || "")}</td>
+              <td>${s.qtdPax || 0}</td>
+              <td>${formatarMoeda(s.precoPax || 0)}</td>
+              <td class="col-interna">${formatarMoeda(s.comissao || 0)}</td>
+              <td class="col-interna">${s.prestador || ""}</td>
+              <td>
+                <button class="btn btn-xs btn-outline" data-remover-servico="${idx}">Remover</button>
+              </td>
+            `;
+            tabelaServicosSelecionados.appendChild(tr);
+          });
+
+          tabelaServicosSelecionados
+            .querySelectorAll("[data-remover-servico]")
+            .forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const i = Number(btn.getAttribute("data-remover-servico"));
+                servicosDaReserva.splice(i, 1);
+                renderizarTabelaServicos();
+                atualizarTotalReserva();
+              });
+            });
+
+          if (!valoresInternosVisiveis) {
+            tabelaServicosSelecionados.parentElement.classList.add(
+              "valores-internos-hidden"
+            );
+          } else {
+            tabelaServicosSelecionados.parentElement.classList.remove(
+              "valores-internos-hidden"
+            );
+          }
+        }
+
+        function atualizarTotalReserva() {
+          const total = servicosDaReserva.reduce((acc, s) => {
+            const qtd = Number(s.qtdPax || 0);
+            const valor = Number(s.precoPax || 0);
+            return acc + qtd * valor;
+          }, 0);
+          totalReservaDisplay.textContent = formatarMoeda(total);
+        }
+
+        btnToggleValoresInternos.addEventListener("click", () => {
+          valoresInternosVisiveis = !valoresInternosVisiveis;
+          renderizarTabelaServicos();
+        });
+
+        // Salvar reserva
+        btnSalvarReserva.addEventListener("click", () => {
+          const base = coletarDadosReservaDoForm();
+
+          const reservaPayload = {
+            id: reservaEmEdicao ? reservaEmEdicao.id : null,
+            dataVenda: base.dataVenda,
+            telefone: base.telefone,
+            hotel: base.hotel,
+            titular: base.titular,
+            acompanhantes: base.acompanhantes,
+            servicos: servicosDaReserva.slice(),
+            totalPax: base.totalPax,
+          };
+
+          btnSalvarReserva.disabled = true;
+          btnSalvarReserva.textContent = "Salvando...";
+
+          CRMApi.salvarReserva(reservaPayload)
+            .then(() => {
+              btnSalvarReserva.disabled = false;
+              btnSalvarReserva.textContent = "Salvar reserva";
+              fecharModal("modalReserva");
+              carregarReservas();
+            })
+            .catch((err) => {
+              console.error(err);
+              btnSalvarReserva.disabled = false;
+              btnSalvarReserva.textContent = "Salvar reserva";
+              alert("Erro ao salvar reserva: " + err.message);
+            });
+        });
+
+        // Inicializa
+        carregarReservas();
+      })();
+    </script>
+  </body>
+</html>
