@@ -22,8 +22,10 @@
         --text: #e5e7eb;
         --text-soft: #9ca3af;
         --danger: #ef4444;
+
         --radius-lg: 18px;
         --shadow-soft: 0 18px 35px rgba(15, 23, 42, 0.55);
+
         --sidebar-width: 260px;
       }
 
@@ -120,7 +122,8 @@
         gap: 10px;
         font-size: 14px;
         cursor: pointer;
-        transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+        transition: background 0.2s ease, color 0.2s ease,
+          transform 0.1s ease;
       }
 
       .nav-btn:hover {
@@ -313,7 +316,7 @@
         cursor: pointer;
       }
 
-      /* FORM LAYOUT */
+      /* FORM SECTIONS */
       .form-section {
         margin-bottom: 16px;
         padding: 12px 14px;
@@ -483,38 +486,70 @@
         gap: 8px;
       }
 
-      /* SERVIÇOS GRID */
+      /* SERVIÇOS GRID – minicards estilo catálogo */
       .servicos-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 14px;
         margin-top: 8px;
       }
 
       .servico-card {
-        padding: 10px;
-        border-radius: 16px;
-        background: radial-gradient(circle at top, #1f2937, #020617);
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        cursor: pointer;
+        padding: 12px;
+        border-radius: 18px;
+        background: #0b1120;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.55);
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
         font-size: 12px;
       }
 
       .servico-card-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 4px;
       }
 
       .servico-card-titulo {
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 13px;
       }
 
-      .servico-card-preco {
-        font-weight: 600;
+      .servico-card-sub {
+        font-size: 11px;
+        color: var(--text-soft);
+      }
+
+      .servico-card-chip {
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        color: var(--text-soft);
+        white-space: nowrap;
+      }
+
+      .servico-card-linha-valores {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        margin-top: 2px;
+      }
+
+      .servico-card-linha-valores div {
+        font-size: 11px;
+      }
+
+      .servico-card-linha-valores span {
+        color: var(--text-soft);
+      }
+
+      .servico-card-linha-valores strong {
+        display: block;
       }
 
       .servico-card-meta {
@@ -524,18 +559,67 @@
 
       .servico-card-footer {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-top: 4px;
+        justify-content: space-between;
+        gap: 6px;
+        margin-top: 6px;
       }
 
-      .servico-card input[type="number"] {
-        width: 60px;
+      /* stepper de quantidade */
+      .qty-stepper {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        overflow: hidden;
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .stepper-btn {
+        width: 26px;
+        height: 28px;
+        border: none;
+        background: transparent;
+        color: var(--text);
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      .stepper-input {
+        width: 40px;
+        border: none;
+        background: transparent;
+        text-align: center;
+        color: var(--text);
+        font-size: 12px;
+        padding: 0;
+      }
+
+      .stepper-input:focus {
+        outline: none;
+      }
+
+      /* botões dentro do card */
+      .servico-card .btn-mini {
+        padding: 4px 10px;
+        font-size: 11px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.7);
+        background: transparent;
+        color: var(--text-soft);
+        cursor: pointer;
+      }
+
+      .servico-card .btn-mini-primary {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: #e5e7eb;
+        font-weight: 500;
       }
 
       .servico-card.selected {
         border-color: var(--accent);
-        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.7);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.8);
       }
 
       .resumo-total {
@@ -884,11 +968,7 @@
           >
             Cancelar
           </button>
-          <button
-            type="button"
-            id="btnSalvarReserva"
-            class="btn btn-primary"
-          >
+          <button type="button" id="btnSalvarReserva" class="btn btn-primary">
             Salvar reserva
           </button>
         </footer>
@@ -931,23 +1011,22 @@
           >
             Fechar
           </button>
-          <button
-            type="button"
-            id="btnAplicarServicos"
-            class="btn btn-primary"
-          >
+          <button type="button" id="btnAplicarServicos" class="btn btn-primary">
             Aplicar seleção
           </button>
         </footer>
       </div>
     </div>
 
-    <!-- JS – API + LÓGICA RESERVAS -->
+    <!-- =============================== -->
+    <!-- ===== JS – API + FRONT ======== -->
+    <!-- =============================== -->
+
     <script>
-      // ================= API (Apps Script) =================
+      /* ============ API (Apps Script) ============ */
 
       const API_URL =
-  "https://script.google.com/macros/s/AKfycbypupbDeWCmBAt3KkOOKahFuAldFlkEJ3yNirG8F70QsXnTMsvTLH6RK6Ivb7YrU25t/exec";
+        "https://script.google.com/macros/s/AKfycbypupbDeWCmBAt3KkOOKahFuAldFlkEJ3yNirG8F70QsXnTMsvTLH6RK6Ivb7YrU25t/exec";
 
       function apiListarReservas() {
         return fetch(API_URL, {
@@ -958,7 +1037,7 @@
           .then((r) => r.json())
           .then((data) => {
             if (!data || !data.success) {
-              console.error("Erro listarReservas:", data && data.error);
+              console.error("Erro listarReservas:", data?.error);
               return [];
             }
             return data.reservas || [];
@@ -975,25 +1054,17 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "salvarReserva",
-            payload: { reserva: reserva },
+            payload: { reserva },
           }),
         })
           .then((r) => r.json())
           .then((data) => {
             if (!data || !data.success) {
-              const msg = (data && data.error) || "Erro ao salvar reserva";
-              console.error("Erro salvarReserva:", msg);
-              throw new Error(msg);
+              console.error("Erro salvarReserva:", data?.error);
+              throw new Error(data?.error || "Erro ao salvar reserva");
             }
             return data.reserva;
           });
-      }
-
-      function apiObterReserva(id) {
-        return apiListarReservas().then((lista) => {
-          const numId = Number(id);
-          return lista.find((r) => Number(r.id) === numId) || null;
-        });
       }
 
       function apiListarCatalogo() {
@@ -1005,7 +1076,7 @@
           .then((r) => r.json())
           .then((data) => {
             if (!data || !data.success) {
-              console.error("Erro listarCatalogo:", data && data.error);
+              console.error("Erro listarCatalogo:", data?.error);
               return [];
             }
             return data.catalogo || [];
@@ -1019,11 +1090,10 @@
       window.CRMApi = {
         listarReservas: apiListarReservas,
         salvarReserva: apiSalvarReserva,
-        obterReserva: apiObterReserva,
         listarCatalogo: apiListarCatalogo,
       };
 
-      // ================= FRONT – Reservas =================
+      /* ============ FRONT – RESERVAS ============ */
 
       (function () {
         const views = {
@@ -1035,38 +1105,41 @@
 
         const viewTitle = document.getElementById("view-title");
         const navButtons = document.querySelectorAll(".nav-btn");
-        const tabelaReservasBody =
-          document.querySelector("#tabelaReservas tbody");
-        const buscaReservasInput = document.getElementById("buscaReservas");
+        const tabelaReservasBody = document.querySelector(
+          "#tabelaReservas tbody"
+        );
+        const buscaReservasInput =
+          document.getElementById("buscaReservas");
 
         const modalReserva = document.getElementById("modalReserva");
         const tituloModalReserva =
           document.getElementById("tituloModalReserva");
         const btnNovaReserva = document.getElementById("btnNovaReserva");
-        const btnSalvarReserva = document.getElementById("btnSalvarReserva");
+        const btnSalvarReserva =
+          document.getElementById("btnSalvarReserva");
         const formReserva = document.getElementById("formReserva");
         const listaAcompanhantes =
           document.getElementById("listaAcompanhantes");
-        const btnAdicionarAcompanhante = document.getElementById(
-          "btnAdicionarAcompanhante"
-        );
+        const btnAdicionarAcompanhante =
+          document.getElementById("btnAdicionarAcompanhante");
         const totalReservaDisplay =
           document.getElementById("totalReservaDisplay");
 
         const inputNascimentoTitular =
           document.getElementById("nascimentoTitular");
-        const inputIdadeTitular = document.getElementById("idadeTitular");
+        const inputIdadeTitular =
+          document.getElementById("idadeTitular");
 
         const tabelaServicosSelecionados = document.querySelector(
           "#tabelaServicosSelecionados tbody"
         );
-        const btnToggleValoresInternos = document.getElementById(
-          "btnToggleValoresInternos"
-        );
+        const btnToggleValoresInternos =
+          document.getElementById("btnToggleValoresInternos");
 
         const modalServicos = document.getElementById("modalServicos");
         const servicosGrid = document.getElementById("servicosGrid");
-        const buscaServicosInput = document.getElementById("buscaServicos");
+        const buscaServicosInput =
+          document.getElementById("buscaServicos");
         const btnEscolherServicos =
           document.getElementById("btnEscolherServicos");
         const btnAplicarServicos =
@@ -1074,33 +1147,36 @@
 
         let reservaEmEdicao = null;
         let servicosTempSelecionados = [];
-        let servicosDaReserva = [];
         let valoresInternosVisiveis = false;
+        let catalogoCache = [];
 
-        // Navegação
+        /* -------- Navegação -------- */
+
         navButtons.forEach((btn) => {
           btn.addEventListener("click", () => {
             const target = btn.getAttribute("data-view");
             navButtons.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
-            trocarView(target);
+
+            Object.keys(views).forEach((key) => {
+              views[key].classList.toggle(
+                "view-active",
+                key === target
+              );
+            });
+
+            const titulos = {
+              reservas: "Central de Reservas",
+              contas: "Contas",
+              calendario: "Calendário",
+              email: "E-mail prestador",
+            };
+            viewTitle.textContent = titulos[target];
           });
         });
 
-        function trocarView(view) {
-          Object.keys(views).forEach((key) => {
-            views[key].classList.toggle("view-active", key === view);
-          });
+        /* -------- Util -------- */
 
-          if (view === "reservas") viewTitle.textContent = "Central de Reservas";
-          else if (view === "contas") viewTitle.textContent = "Contas";
-          else if (view === "calendario")
-            viewTitle.textContent = "Calendário";
-          else if (view === "email")
-            viewTitle.textContent = "E-mail prestador";
-        }
-
-        // Utils
         function formatarMoeda(v) {
           if (!v || isNaN(v)) return "AR$ 0,00";
           return (
@@ -1115,42 +1191,39 @@
         function calcularIdade(dateStr) {
           if (!dateStr) return "";
           const hoje = new Date();
-          const nascimento = new Date(dateStr + "T00:00:00");
-          let idade = hoje.getFullYear() - nascimento.getFullYear();
-          const m = hoje.getMonth() - nascimento.getMonth();
-          if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+          const nasc = new Date(dateStr + "T00:00:00");
+          let idade = hoje.getFullYear() - nasc.getFullYear();
+          const m = hoje.getMonth() - nasc.getMonth();
+          if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
             idade--;
           }
           return idade;
         }
 
         function abrirModal(id) {
-          const el = document.getElementById(id);
-          if (el) el.classList.add("open");
+          document.getElementById(id)?.classList.add("open");
         }
 
         function fecharModal(id) {
-          const el = document.getElementById(id);
-          if (el) el.classList.remove("open");
+          document.getElementById(id)?.classList.remove("open");
         }
 
         document
           .querySelectorAll("[data-close-modal]")
           .forEach((el) => {
             el.addEventListener("click", () => {
-              const id = el.getAttribute("data-close-modal");
-              fecharModal(id);
+              fecharModal(el.getAttribute("data-close-modal"));
             });
           });
 
-        function obterTotalPaxAtual() {
-          const qtdAcomp =
-            listaAcompanhantes.querySelectorAll(".pax-card-acompanhante")
-              .length;
-          return 1 + qtdAcomp;
+        function getTotalPaxAtual() {
+          return (
+            1 + listaAcompanhantes.querySelectorAll(".pax-card").length
+          );
         }
 
-        // Lista reservas
+        /* -------- Reservas (tabela) -------- */
+
         function carregarReservas() {
           CRMApi.listarReservas().then((reservas) => {
             renderizarTabelaReservas(reservas);
@@ -1158,19 +1231,18 @@
         }
 
         function renderizarTabelaReservas(reservas) {
-          const termo = (buscaReservasInput.value || "").toLowerCase().trim();
+          const termo =
+            (buscaReservasInput.value || "").toLowerCase().trim();
+
           tabelaReservasBody.innerHTML = "";
 
           reservas
             .filter((r) => {
               if (!termo) return true;
-              const alvo =
-                (r.titular && r.titular.nome ? r.titular.nome : "") +
-                " " +
-                (r.hotel || "") +
-                " " +
-                (r.telefone || "");
-              return alvo.toLowerCase().includes(termo);
+              const alvo = `${r.titular?.nome || ""} ${r.hotel || ""} ${
+                r.telefone || ""
+              }`.toLowerCase();
+              return alvo.includes(termo);
             })
             .forEach((r) => {
               const tr = document.createElement("tr");
@@ -1178,7 +1250,8 @@
               const total =
                 Array.isArray(r.servicos) && r.servicos.length
                   ? r.servicos.reduce((acc, s) => {
-                      const pax = Number(s.qtdPax || r.totalPax || 1);
+                      const pax =
+                        Number(s.qtdPax || r.totalPax || 1) || 1;
                       const valor = Number(s.precoPax || 0) * pax;
                       return acc + valor;
                     }, 0)
@@ -1187,340 +1260,324 @@
               tr.innerHTML = `
                 <td>${r.id || ""}</td>
                 <td>${r.dataVenda || ""}</td>
-                <td>${r.titular ? r.titular.nome || "" : ""}</td>
+                <td>${r.titular?.nome || ""}</td>
                 <td>${r.hotel || ""}</td>
                 <td>${r.telefone || ""}</td>
                 <td>${r.totalPax || ""}</td>
                 <td>${formatarMoeda(total)}</td>
                 <td>
-                  <button class="btn btn-xs btn-outline" data-editar-reserva="${
-                    r.id
-                  }">Editar</button>
+                  <button class="btn btn-xs btn-outline" data-editar="${r.id}">
+                    Editar
+                  </button>
                 </td>
               `;
+
               tabelaReservasBody.appendChild(tr);
             });
 
           tabelaReservasBody
-            .querySelectorAll("[data-editar-reserva]")
+            .querySelectorAll("[data-editar]")
             .forEach((btn) => {
               btn.addEventListener("click", () => {
-                const id = Number(btn.getAttribute("data-editar-reserva"));
-                editarReserva(id);
+                editarReserva(Number(btn.getAttribute("data-editar")));
               });
             });
         }
 
         buscaReservasInput.addEventListener("input", carregarReservas);
 
-        // Nova / editar
-        btnNovaReserva.addEventListener("click", novaReserva);
+        /* -------- Nova reserva -------- */
 
-        function novaReserva() {
+        btnNovaReserva.addEventListener("click", () => {
           reservaEmEdicao = null;
           tituloModalReserva.textContent = "Nova reserva";
+
           formReserva.reset();
           listaAcompanhantes.innerHTML = "";
           tabelaServicosSelecionados.innerHTML = "";
-          totalReservaDisplay.textContent = formatarMoeda(0);
-          servicosDaReserva = [];
+          totalReservaDisplay.textContent = "AR$ 0,00";
           servicosTempSelecionados = [];
 
           const hoje = new Date();
-          const yyyy = hoje.getFullYear();
-          const mm = String(hoje.getMonth() + 1).padStart(2, "0");
-          const dd = String(hoje.getDate()).padStart(2, "0");
-          document.getElementById("dataVenda").value = `${yyyy}-${mm}-${dd}`;
+          document.getElementById("dataVenda").value =
+            hoje.toISOString().split("T")[0];
 
           abrirModal("modalReserva");
-        }
+        });
+
+        /* -------- Editar reserva -------- */
 
         function editarReserva(id) {
-          CRMApi.obterReserva(id).then((reserva) => {
-            if (!reserva) {
-              alert("Reserva não encontrada");
-              return;
+          apiListarReservas().then((res) => {
+            const r = res.find((x) => Number(x.id) === Number(id));
+            if (!r) return;
+
+            reservaEmEdicao = r.id;
+            tituloModalReserva.textContent = "Editar reserva";
+
+            document.getElementById("dataVenda").value =
+              r.dataVenda || "";
+            document.getElementById("telefone").value =
+              r.telefone || "";
+            document.getElementById("hotel").value = r.hotel || "";
+            document.getElementById(
+              "nacionalidadeTitular"
+            ).value = r.titular?.nacionalidade || "";
+
+            document.getElementById("nomeTitular").value =
+              r.titular?.nome || "";
+            document.getElementById(
+              "tipoDocumentoTitular"
+            ).value = r.titular?.tipoDoc || "DNI";
+            document.getElementById(
+              "numeroDocumentoTitular"
+            ).value = r.titular?.numeroDoc || "";
+            document.getElementById(
+              "nascimentoTitular"
+            ).value = r.titular?.nascimento || "";
+            document.getElementById("idadeTitular").value =
+              r.titular?.idade || "";
+
+            listaAcompanhantes.innerHTML = "";
+            if (Array.isArray(r.acompanhantes)) {
+              r.acompanhantes.forEach((a) => {
+                adicionarAcompanhante(
+                  a.nome,
+                  a.tipoDoc,
+                  a.numeroDoc,
+                  a.nascimento,
+                  a.idade
+                );
+              });
             }
-            reservaEmEdicao = reserva;
-            preencherFormularioComReserva(reserva);
+
+            tabelaServicosSelecionados.innerHTML = "";
+            servicosTempSelecionados = Array.isArray(r.servicos)
+              ? r.servicos
+              : [];
+            atualizarTabelaServicos();
+
             abrirModal("modalReserva");
           });
         }
 
-        function preencherFormularioComReserva(r) {
-          tituloModalReserva.textContent = `Editar reserva #${r.id}`;
-          formReserva.reset();
-          listaAcompanhantes.innerHTML = "";
-          tabelaServicosSelecionados.innerHTML = "";
-          servicosDaReserva = Array.isArray(r.servicos) ? r.servicos.slice() : [];
-          servicosTempSelecionados = [];
+        /* -------- Acompanhantes -------- */
 
-          document.getElementById("dataVenda").value = r.dataVenda || "";
-          document.getElementById("telefone").value = r.telefone || "";
-          document.getElementById("hotel").value = r.hotel || "";
-          document.getElementById("nacionalidadeTitular").value =
-            (r.titular && r.titular.nacionalidade) || "";
-
-          document.getElementById("nomeTitular").value =
-            (r.titular && r.titular.nome) || "";
-          document.getElementById("tipoDocumentoTitular").value =
-            (r.titular && r.titular.tipoDocumento) || "DNI";
-          document.getElementById("numeroDocumentoTitular").value =
-            (r.titular && r.titular.numeroDocumento) || "";
-          document.getElementById("nascimentoTitular").value =
-            (r.titular && r.titular.nascimento) || "";
-          document.getElementById("idadeTitular").value =
-            (r.titular && r.titular.idade) || "";
-
-          if (Array.isArray(r.acompanhantes)) {
-            r.acompanhantes.forEach((ac) => adicionarAcompanhante(ac));
-          }
-
-          renderizarTabelaServicos();
-          atualizarTotalReserva();
-        }
-
-        // Titular: idade automática
-        inputNascimentoTitular.addEventListener("change", () => {
-          inputIdadeTitular.value =
-            calcularIdade(inputNascimentoTitular.value) || "";
+        btnAdicionarAcompanhante.addEventListener("click", () => {
+          adicionarAcompanhante();
         });
 
-        // Acompanhantes
-        btnAdicionarAcompanhante.addEventListener("click", () =>
-          adicionarAcompanhante()
-        );
+        function adicionarAcompanhante(
+          nome = "",
+          tipoDoc = "DNI",
+          numeroDoc = "",
+          nascimento = "",
+          idade = ""
+        ) {
+          const div = document.createElement("div");
+          div.className = "pax-card";
 
-        function adicionarAcompanhante(acomp) {
-          const card = document.createElement("div");
-          card.className = "pax-card pax-card-acompanhante";
-
-          const nome = (acomp && acomp.nome) || "";
-          const tipoDocumento = (acomp && acomp.tipoDocumento) || "DNI";
-          const numeroDocumento = (acomp && acomp.numeroDocumento) || "";
-          const nascimento = (acomp && acomp.nascimento) || "";
-          const idade = (acomp && acomp.idade) || "";
-          const nacionalidade = (acomp && acomp.nacionalidade) || "";
-
-          card.innerHTML = `
+          div.innerHTML = `
             <div class="pax-card-header">
-              <span class="badge">Acompanhante</span>
-              <button type="button" class="btn btn-xs" data-remover-acomp>Remover</button>
+              <span class="badge badge-primary">Acompanhante</span>
+              <button class="icon-btn btn-remove">✕</button>
             </div>
+
             <div class="grid grid-2">
               <div class="field">
                 <label>Nome completo</label>
-                <input type="text" class="input" data-field="nome" value="${nome}" />
+                <input type="text" class="input ac-nome" value="${nome}" />
               </div>
+
               <div class="field">
                 <label>Documento (tipo)</label>
-                <select class="input" data-field="tipoDocumento">
-                  <option value="DNI" ${tipoDocumento === "DNI" ? "selected" : ""}>DNI</option>
-                  <option value="RG" ${tipoDocumento === "RG" ? "selected" : ""}>RG</option>
+                <select class="input ac-tipoDoc">
+                  <option value="DNI" ${tipoDoc === "DNI" ? "selected" : ""}>DNI</option>
+                  <option value="RG" ${tipoDoc === "RG" ? "selected" : ""}>RG</option>
                   <option value="PASSAPORTE" ${
-                    tipoDocumento === "PASSAPORTE" ? "selected" : ""
+                    tipoDoc === "PASSAPORTE" ? "selected" : ""
                   }>Passaporte</option>
                 </select>
               </div>
+
               <div class="field">
                 <label>Documento (nº)</label>
-                <input type="text" class="input" data-field="numeroDocumento" value="${numeroDocumento}" />
+                <input type="text" class="input ac-numeroDoc" value="${numeroDoc}" />
               </div>
+
               <div class="field">
                 <label>Data de nascimento</label>
-                <input type="date" class="input" data-field="nascimento" value="${nascimento}" />
+                <input type="date" class="input ac-nascimento" value="${nascimento}" />
               </div>
+
               <div class="field">
                 <label>Idade</label>
-                <input type="number" class="input" data-field="idade" value="${idade}" readonly />
-              </div>
-              <div class="field">
-                <label>Nacionalidade</label>
-                <input type="text" class="input" data-field="nacionalidade" value="${nacionalidade}" />
+                <input type="number" class="input ac-idade" value="${idade}" readonly />
               </div>
             </div>
           `;
 
-          const btnRemover = card.querySelector("[data-remover-acomp]");
-          btnRemover.addEventListener("click", () => {
-            card.remove();
-            atualizarTotalReserva();
-          });
-
-          const nascimentoInput = card.querySelector(
-            '[data-field="nascimento"]'
-          );
-          const idadeInput = card.querySelector('[data-field="idade"]');
-
-          nascimentoInput.addEventListener("change", () => {
-            idadeInput.value = calcularIdade(nascimentoInput.value) || "";
-          });
-
-          listaAcompanhantes.appendChild(card);
-        }
-
-        function coletarDadosReservaDoForm() {
-          const dataVenda = document.getElementById("dataVenda").value || "";
-          const telefone = document.getElementById("telefone").value || "";
-          const hotel = document.getElementById("hotel").value || "";
-          const nacionalidadeTitular =
-            document.getElementById("nacionalidadeTitular").value || "";
-
-          const titular = {
-            nome: document.getElementById("nomeTitular").value || "",
-            tipoDocumento:
-              document.getElementById("tipoDocumentoTitular").value || "",
-            numeroDocumento:
-              document.getElementById("numeroDocumentoTitular").value || "",
-            nascimento:
-              document.getElementById("nascimentoTitular").value || "",
-            idade: document.getElementById("idadeTitular").value || "",
-            nacionalidade: nacionalidadeTitular,
+          div.querySelector(".btn-remove").onclick = () => {
+            div.remove();
+            atualizarTotal();
           };
 
-          const acompanhantes = [];
-          listaAcompanhantes
-            .querySelectorAll(".pax-card-acompanhante")
-            .forEach((card) => {
-              const getField = (name) =>
-                card.querySelector(`[data-field="${name}"]`).value || "";
-              acompanhantes.push({
-                nome: getField("nome"),
-                tipoDocumento: getField("tipoDocumento"),
-                numeroDocumento: getField("numeroDocumento"),
-                nascimento: getField("nascimento"),
-                idade: getField("idade"),
-                nacionalidade: getField("nacionalidade"),
-              });
-            });
-
-          const totalPax = 1 + acompanhantes.length;
-
-          return {
-            dataVenda,
-            telefone,
-            hotel,
-            titular,
-            acompanhantes,
-            totalPax,
+          div.querySelector(".ac-nascimento").onchange = (e) => {
+            const nasc = e.target.value;
+            const idadeCalc = calcularIdade(nasc);
+            div.querySelector(".ac-idade").value = idadeCalc;
+            atualizarTotal();
           };
+
+          listaAcompanhantes.appendChild(div);
         }
 
-        // Serviços – catálogo
-        btnEscolherServicos.addEventListener("click", () => {
-          const totalPaxAtual = obterTotalPaxAtual();
-          servicosTempSelecionados = servicosDaReserva.map((s) =>
-            Object.assign({}, s)
-          );
-          carregarCatalogo(totalPaxAtual);
+        inputNascimentoTitular.addEventListener("change", (e) => {
+          inputIdadeTitular.value = calcularIdade(e.target.value);
         });
 
-        function carregarCatalogo(totalPaxPadrao) {
-          CRMApi.listarCatalogo().then((catalogo) => {
-            renderizarCatalogo(catalogo, totalPaxPadrao);
-            abrirModal("modalServicos");
+        /* -------- Catálogo (minicards) -------- */
+
+        btnEscolherServicos.addEventListener("click", () => {
+          abrirModal("modalServicos");
+          carregarCatalogo();
+        });
+
+        function carregarCatalogo() {
+          if (catalogoCache.length) {
+            renderizarCatalogo(catalogoCache);
+            return;
+          }
+
+          CRMApi.listarCatalogo().then((itens) => {
+            catalogoCache = Array.isArray(itens) ? itens : [];
+            renderizarCatalogo(catalogoCache);
           });
         }
 
-        function renderizarCatalogo(catalogo, totalPaxPadrao) {
+        function renderizarCatalogo(lista) {
+          const termo = (buscaServicosInput.value || "")
+            .toLowerCase()
+            .trim();
           servicosGrid.innerHTML = "";
-          const termo = (buscaServicosInput.value || "").toLowerCase().trim();
 
-          catalogo
-            .filter((item) => {
+          lista
+            .filter((s) => {
               if (!termo) return true;
-              const alvo =
-                (item.atividade || "") +
-                " " +
-                (item.categoria || "") +
-                " " +
-                (item.prestador || "");
-              return alvo.toLowerCase().includes(termo);
+              const alvo = `${s.atividade || ""} ${s.categoria || ""} ${
+                s.prestador || ""
+              }`.toLowerCase();
+              return alvo.includes(termo);
             })
-            .forEach((item) => {
+            .forEach((s) => {
+              const idxExistente = servicosTempSelecionados.findIndex(
+                (x) => x.id === s.id
+              );
+              const existente =
+                idxExistente >= 0 ? servicosTempSelecionados[idxExistente] : null;
+              const qtdInicial = existente ? existente.qtdPax : 0;
+
               const card = document.createElement("div");
               card.className = "servico-card";
-              card.dataset.idCatalogo = item.id;
-
-              const existente = servicosTempSelecionados.find(
-                (s) => s.idCatalogo === item.id
-              );
-              const qtdPax = existente
-                ? existente.qtdPax || totalPaxPadrao
-                : totalPaxPadrao;
-
-              if (existente) {
-                card.classList.add("selected");
-              }
+              if (qtdInicial > 0) card.classList.add("selected");
 
               card.innerHTML = `
                 <div class="servico-card-header">
-                  <div class="servico-card-titulo">
-                    ${item.atividade || ""}
+                  <div>
+                    <div class="servico-card-titulo">${s.atividade || ""}</div>
+                    <div class="servico-card-sub">${s.categoria || ""}</div>
                   </div>
-                  <div class="servico-card-preco">
-                    ${formatarMoeda(item.precoPax || 0)}
+                  <span class="servico-card-chip">${
+                    s.tipoTarifa || "Tarifa não diferenciada"
+                  }</span>
+                </div>
+
+                <div class="servico-card-linha-valores">
+                  <div>
+                    <span>Preço público:</span>
+                    <strong>${formatarMoeda(s.precoPax)}</strong>
+                  </div>
+                  <div>
+                    <span>Comissão:</span>
+                    <strong>${formatarMoeda(s.comissao)}</strong>
+                  </div>
+                  <div>
+                    <span>Neto:</span>
+                    <strong>${formatarMoeda(s.precoPrestador)}</strong>
                   </div>
                 </div>
+
                 <div class="servico-card-meta">
-                  ${item.categoria || ""} · ${item.prestador || ""}
+                  Prestador: ${s.prestador || "(a confirmar)"}
                 </div>
-                <div class="servico-card-meta">
-                  Comissão: ${formatarMoeda(item.comissao || 0)} · Prestador: ${formatarMoeda(item.precoPrestador || 0)}
-                </div>
+
                 <div class="servico-card-footer">
-                  <span>PAX</span>
-                  <input type="number" min="0" class="input" value="${qtdPax}" />
+                  <div class="qty-stepper">
+                    <button type="button" class="stepper-btn stepper-minus">−</button>
+                    <input type="number" min="0" class="stepper-input" value="${qtdInicial}" />
+                    <button type="button" class="stepper-btn stepper-plus">+</button>
+                  </div>
+
+                  <button type="button" class="btn-mini btn-auto-pax">
+                    Auto=PAX
+                  </button>
+
+                  <button type="button" class="btn-mini btn-mini-primary btn-add-servico">
+                    Adicionar
+                  </button>
                 </div>
               `;
 
-              const inputQtd = card.querySelector("input[type='number']");
+              const inputQtd = card.querySelector(".stepper-input");
+              const btnMinus = card.querySelector(".stepper-minus");
+              const btnPlus = card.querySelector(".stepper-plus");
+              const btnAutoPax = card.querySelector(".btn-auto-pax");
+              const btnAdd = card.querySelector(".btn-add-servico");
 
-              function syncSelecionado() {
-                let selecionado = servicosTempSelecionados.find(
-                  (s) => s.idCatalogo === item.id
-                );
-                let qtd = Number(inputQtd.value);
-                if (isNaN(qtd) || qtd < 0) qtd = 0;
-                inputQtd.value = qtd;
-
-                if (!selecionado && card.classList.contains("selected")) {
-                  selecionado = {
-                    idCatalogo: item.id,
-                    atividade: item.atividade,
-                    categoria: item.categoria,
-                    precoPax: Number(item.precoPax || item.precoPax || 0),
-                    comissao: Number(item.comissao || 0),
-                    precoPrestador: Number(item.precoPrestador || 0),
-                    prestador: item.prestador || "",
-                    qtdPax: qtd,
-                  };
-                  servicosTempSelecionados.push(selecionado);
-                } else if (selecionado) {
-                  selecionado.qtdPax = qtd;
-                }
-              }
-
-              card.addEventListener("click", (ev) => {
-                if (ev.target === inputQtd) return;
-                const id = item.id;
-                const idx = servicosTempSelecionados.findIndex(
-                  (s) => s.idCatalogo === id
-                );
-                if (idx >= 0) {
-                  servicosTempSelecionados.splice(idx, 1);
-                  card.classList.remove("selected");
-                } else {
-                  card.classList.add("selected");
-                  syncSelecionado();
-                }
+              btnMinus.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                let v = Number(inputQtd.value) || 0;
+                if (v > 0) v--;
+                inputQtd.value = v;
               });
 
-              inputQtd.addEventListener("change", () => {
-                if (!card.classList.contains("selected")) {
+              btnPlus.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                let v = Number(inputQtd.value) || 0;
+                v++;
+                inputQtd.value = v;
+              });
+
+              btnAutoPax.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                inputQtd.value = getTotalPaxAtual();
+              });
+
+              btnAdd.addEventListener("click", (ev) => {
+                ev.stopPropagation();
+                const qtd = Number(inputQtd.value) || 0;
+
+                const payload = {
+                  ...s,
+                  qtdPax: qtd,
+                };
+
+                const i = servicosTempSelecionados.findIndex(
+                  (x) => x.id === s.id
+                );
+
+                if (qtd <= 0) {
+                  if (i >= 0) servicosTempSelecionados.splice(i, 1);
+                  card.classList.remove("selected");
+                } else if (i >= 0) {
+                  servicosTempSelecionados[i] = payload;
+                  card.classList.add("selected");
+                } else {
+                  servicosTempSelecionados.push(payload);
                   card.classList.add("selected");
                 }
-                syncSelecionado();
+
+                atualizarTabelaServicos();
               });
 
               servicosGrid.appendChild(card);
@@ -1528,109 +1585,132 @@
         }
 
         buscaServicosInput.addEventListener("input", () => {
-          // Recarrega catálogo mantendo seleção
-          const totalPaxAtual = obterTotalPaxAtual();
-          CRMApi.listarCatalogo().then((catalogo) => {
-            renderizarCatalogo(catalogo, totalPaxAtual);
-          });
+          renderizarCatalogo(catalogoCache);
         });
 
         btnAplicarServicos.addEventListener("click", () => {
-          servicosDaReserva = servicosTempSelecionados.map((s) =>
-            Object.assign({}, s)
-          );
-          renderizarTabelaServicos();
-          atualizarTotalReserva();
+          atualizarTabelaServicos();
           fecharModal("modalServicos");
         });
 
-        function renderizarTabelaServicos() {
+        /* -------- Tabela de serviços selecionados -------- */
+
+        function atualizarTabelaServicos() {
           tabelaServicosSelecionados.innerHTML = "";
-          servicosDaReserva.forEach((s, idx) => {
+
+          servicosTempSelecionados.forEach((s, idx) => {
             const tr = document.createElement("tr");
+
             tr.innerHTML = `
-              <td>${(s.atividade || "")} - ${(s.categoria || "")}</td>
-              <td>${s.qtdPax || 0}</td>
-              <td>${formatarMoeda(s.precoPax || 0)}</td>
-              <td class="col-interna">${formatarMoeda(s.comissao || 0)}</td>
-              <td class="col-interna">${s.prestador || ""}</td>
+              <td>${s.atividade}</td>
+
               <td>
-                <button class="btn btn-xs btn-outline" data-remover-servico="${idx}">Remover</button>
+                <input type="number" min="1" value="${
+                  s.qtdPax
+                }" class="input qtdServico"/>
+              </td>
+
+              <td>${formatarMoeda(s.precoPax)}</td>
+
+              <td class="col-interna">${formatarMoeda(s.comissao)}</td>
+
+              <td class="col-interna">${formatarMoeda(
+                s.precoPrestador
+              )}</td>
+
+              <td>
+                <button class="btn btn-xs btn-outline" data-rem="${idx}">
+                  Remover
+                </button>
               </td>
             `;
+
+            tr.querySelector(".qtdServico").onchange = (ev) => {
+              const qtd = Number(ev.target.value) || 1;
+              servicosTempSelecionados[idx].qtdPax = qtd;
+              atualizarTotal();
+            };
+
+            tr.querySelector("[data-rem]").onclick = () => {
+              servicosTempSelecionados.splice(idx, 1);
+              atualizarTabelaServicos();
+            };
+
             tabelaServicosSelecionados.appendChild(tr);
           });
 
-          tabelaServicosSelecionados
-            .querySelectorAll("[data-remover-servico]")
-            .forEach((btn) => {
-              btn.addEventListener("click", () => {
-                const i = Number(btn.getAttribute("data-remover-servico"));
-                servicosDaReserva.splice(i, 1);
-                renderizarTabelaServicos();
-                atualizarTotalReserva();
-              });
-            });
-
-          if (!valoresInternosVisiveis) {
-            tabelaServicosSelecionados.parentElement.classList.add(
-              "valores-internos-hidden"
-            );
-          } else {
-            tabelaServicosSelecionados.parentElement.classList.remove(
-              "valores-internos-hidden"
-            );
-          }
-        }
-
-        function atualizarTotalReserva() {
-          const total = servicosDaReserva.reduce((acc, s) => {
-            const qtd = Number(s.qtdPax || 0);
-            const valor = Number(s.precoPax || 0);
-            return acc + qtd * valor;
-          }, 0);
-          totalReservaDisplay.textContent = formatarMoeda(total);
+          atualizarTotal();
         }
 
         btnToggleValoresInternos.addEventListener("click", () => {
           valoresInternosVisiveis = !valoresInternosVisiveis;
-          renderizarTabelaServicos();
+          tabelaServicosSelecionados.parentElement.classList.toggle(
+            "valores-internos-hidden",
+            !valoresInternosVisiveis
+          );
         });
 
-        // Salvar reserva
-        btnSalvarReserva.addEventListener("click", () => {
-          const base = coletarDadosReservaDoForm();
+        function atualizarTotal() {
+          const titularNascimento =
+            document.getElementById("nascimentoTitular").value;
+          inputIdadeTitular.value = calcularIdade(titularNascimento);
 
-          const reservaPayload = {
-            id: reservaEmEdicao ? reservaEmEdicao.id : null,
-            dataVenda: base.dataVenda,
-            telefone: base.telefone,
-            hotel: base.hotel,
-            titular: base.titular,
-            acompanhantes: base.acompanhantes,
-            servicos: servicosDaReserva.slice(),
-            totalPax: base.totalPax,
+          let total = 0;
+
+          servicosTempSelecionados.forEach((s) => {
+            const qtd = Number(s.qtdPax || 1);
+            total += Number(s.precoPax || 0) * qtd;
+          });
+
+          totalReservaDisplay.textContent = formatarMoeda(total);
+        }
+
+        /* -------- Salvar reserva -------- */
+
+        btnSalvarReserva.addEventListener("click", () => {
+          const titular = {
+            nome: document.getElementById("nomeTitular").value.trim(),
+            tipoDoc: document
+              .getElementById("tipoDocumentoTitular")
+              .value.trim(),
+            numeroDoc: document
+              .getElementById("numeroDocumentoTitular")
+              .value.trim(),
+            nascimento: document.getElementById("nascimentoTitular").value,
+            idade: document.getElementById("idadeTitular").value,
+            nacionalidade:
+              document.getElementById("nacionalidadeTitular").value,
           };
 
-          btnSalvarReserva.disabled = true;
-          btnSalvarReserva.textContent = "Salvando...";
+          const acompanhantes = Array.from(
+            listaAcompanhantes.querySelectorAll(".pax-card")
+          ).map((div) => ({
+            nome: div.querySelector(".ac-nome").value.trim(),
+            tipoDoc: div.querySelector(".ac-tipoDoc").value,
+            numeroDoc: div.querySelector(".ac-numeroDoc").value.trim(),
+            nascimento: div.querySelector(".ac-nascimento").value,
+            idade: div.querySelector(".ac-idade").value,
+          }));
 
-          CRMApi.salvarReserva(reservaPayload)
+          const reserva = {
+            id: reservaEmEdicao || null,
+            dataVenda: document.getElementById("dataVenda").value,
+            telefone: document.getElementById("telefone").value.trim(),
+            hotel: document.getElementById("hotel").value.trim(),
+            titular,
+            acompanhantes,
+            servicos: servicosTempSelecionados,
+            totalPax: 1 + acompanhantes.length,
+          };
+
+          apiSalvarReserva(reserva)
             .then(() => {
-              btnSalvarReserva.disabled = false;
-              btnSalvarReserva.textContent = "Salvar reserva";
               fecharModal("modalReserva");
               carregarReservas();
             })
-            .catch((err) => {
-              console.error(err);
-              btnSalvarReserva.disabled = false;
-              btnSalvarReserva.textContent = "Salvar reserva";
-              alert("Erro ao salvar reserva: " + err.message);
-            });
+            .catch((err) => alert(err.message));
         });
 
-        // Inicializa
         carregarReservas();
       })();
     </script>
